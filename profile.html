@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - InternshipHub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-briefcase"></i>
+                <span>InternshipHub</span>
+            </div>
+            <div class="nav-menu" id="nav-menu">
+                <a href="{{ url_for('index') }}" class="nav-link">Home</a>
+                <a href="{{ url_for('internships') }}" class="nav-link">Internships</a>
+                <a href="{{ url_for('dashboard') }}" class="nav-link">Dashboard</a>
+                <a href="{{ url_for('profile') }}" class="nav-link">Profile</a>
+                <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+            </div>
+            <div class="nav-toggle" id="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profile Content -->
+    <div class="profile-container">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <h1 class="profile-name">{{ user.name }}</h1>
+            <p class="profile-email">{{ user.email }}</p>
+            <div class="verification-status {{ 'verified' if user.is_verified else 'unverified' }}">
+                <i class="fas fa-{{ 'check-circle' if user.is_verified else 'exclamation-triangle' }}"></i>
+                {{ 'Profile Verified' if user.is_verified else 'Profile Not Verified' }}
+            </div>
+        </div>
+
+        <!-- Profile Sections -->
+        <div class="profile-sections">
+            <!-- Personal Information -->
+            <div class="profile-section">
+                <h2 class="section-title">Personal Information</h2>
+                <form method="POST" action="{{ url_for('update_profile') }}">
+                    <div class="info-grid">
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" name="name" value="{{ user.name }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" value="{{ user.email }}" readonly style="background: #f8f9fa; color: #6c757d;">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="mobile">Mobile Number</label>
+                            <input type="tel" id="mobile" name="mobile" value="{{ user.mobile }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="education_level">Education Level</label>
+                            <select id="education_level" name="education_level" required>
+                                <option value="High School" {% if user.education_level == 'High School' %}selected{% endif %}>High School</option>
+                                <option value="Diploma" {% if user.education_level == 'Diploma' %}selected{% endif %}>Diploma</option>
+                                <option value="Bachelor's" {% if user.education_level == "Bachelor's" %}selected{% endif %}>Bachelor's Degree</option>
+                                <option value="Master's" {% if user.education_level == "Master's" %}selected{% endif %}>Master's Degree</option>
+                                <option value="PhD" {% if user.education_level == 'PhD' %}selected{% endif %}>PhD</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="field_of_study">Field of Study</label>
+                            <input type="text" id="field_of_study" name="field_of_study" value="{{ user.field_of_study }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="university">University/Institution</label>
+                            <input type="text" id="university" name="university" value="{{ user.university }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="graduation_year">Graduation Year</label>
+                            <input type="number" id="graduation_year" name="graduation_year" value="{{ user.graduation_year }}" min="2020" max="2030" required>
+                        </div>
+                        
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label for="skills">Skills</label>
+                            <textarea id="skills" name="skills" placeholder="List your skills separated by commas">{{ user.skills or '' }}</textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Update Profile
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Document Verification -->
+            <div class="profile-section">
+                <h2 class="section-title">Document Verification</h2>
+                
+                {% if user.aadhar_verified %}
+                    <div style="background: #d1fae5; padding: 1.5rem; border-radius: 12px; border: 2px solid #a7f3d0; margin-bottom: 1.5rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <i class="fas fa-check-circle" style="font-size: 2rem; color: #065f46;"></i>
+                            <div>
+                                <h3 style="color: #065f46; margin-bottom: 0.25rem;">Aadhar Verified</h3>
+                                <p style="color: #047857; margin: 0;">Your Aadhar has been successfully verified through DigiLocker.</p>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div style="background: #fef3c7; padding: 1.5rem; border-radius: 12px; border: 2px solid #fde68a; margin-bottom: 1.5rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: #92400e;"></i>
+                            <div>
+                                <h3 style="color: #92400e; margin-bottom: 0.25rem;">Aadhar Not Verified</h3>
+                                <p style="color: #b45309; margin: 0;">Verify your Aadhar to access all features and apply for internships.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('verify_aadhar') }}">
+                        <div class="form-group">
+                            <label for="aadhar_number">Aadhar Number</label>
+                            <input type="text" id="aadhar_number" name="aadhar_number" placeholder="Enter your 12-digit Aadhar number" maxlength="12" pattern="[0-9]{12}">
+                            <small style="color: #666; margin-top: 0.5rem; display: block;">
+                                <i class="fas fa-info-circle"></i>
+                                We'll verify your Aadhar through DigiLocker integration
+                            </small>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-shield-alt"></i>
+                                Verify Aadhar
+                            </button>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+
+            <!-- Profile Statistics -->
+            <div class="profile-section">
+                <h2 class="section-title">Profile Statistics</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Profile Completion</div>
+                        <div class="info-value">
+                            {% set completion = 100 if user.aadhar_verified else 75 %}
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <div style="flex: 1; background: #e5e7eb; height: 8px; border-radius: 4px; overflow: hidden;">
+                                    <div style="width: {{ completion }}%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 100%;"></div>
+                                </div>
+                                <span style="font-weight: 500; color: #667eea;">{{ completion }}%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Member Since</div>
+                        <div class="info-value">{{ user.created_at.strftime('%B %Y') }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Profile Status</div>
+                        <div class="info-value">
+                            <span class="verification-status {{ 'verified' if user.is_verified else 'unverified' }}" style="font-size: 0.9rem; padding: 0.25rem 0.75rem;">
+                                {{ 'Verified' if user.is_verified else 'Pending' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Actions -->
+            <div class="profile-section">
+                <h2 class="section-title">Account Actions</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline" style="text-align: center; padding: 1rem;">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                    <a href="{{ url_for('internships') }}" class="btn btn-outline" style="text-align: center; padding: 1rem;">
+                        <i class="fas fa-search"></i>
+                        Browse Internships
+                    </a>
+                    <button onclick="exportProfile()" class="btn btn-outline" style="text-align: center; padding: 1rem;">
+                        <i class="fas fa-download"></i>
+                        Export Profile
+                    </button>
+                    <button onclick="deleteAccount()" class="btn btn-outline" style="text-align: center; padding: 1rem; color: #dc2626; border-color: #dc2626;">
+                        <i class="fas fa-trash"></i>
+                        Delete Account
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-briefcase"></i>
+                        <span>InternshipHub</span>
+                    </div>
+                    <p>Connecting students with verified internship opportunities from trusted companies and government organizations.</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 InternshipHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        function exportProfile() {
+            // Simulate profile export
+            showAlert('Profile data exported successfully!', 'success');
+        }
+        
+        function deleteAccount() {
+            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                // In a real application, this would make an API call to delete the account
+                showAlert('Account deletion requested. Please contact support.', 'warning');
+            }
+        }
+    </script>
+</body>
+</html>

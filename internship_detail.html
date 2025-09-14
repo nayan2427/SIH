@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ internship.title }} - InternshipHub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-briefcase"></i>
+                <span>InternshipHub</span>
+            </div>
+            <div class="nav-menu" id="nav-menu">
+                <a href="{{ url_for('index') }}" class="nav-link">Home</a>
+                <a href="{{ url_for('internships') }}" class="nav-link">Internships</a>
+                {% if session.user_id %}
+                    <a href="{{ url_for('dashboard') }}" class="nav-link">Dashboard</a>
+                    <a href="{{ url_for('profile') }}" class="nav-link">Profile</a>
+                    <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="nav-link">Login</a>
+                    <a href="{{ url_for('register') }}" class="nav-link btn-primary">Sign Up</a>
+                {% endif %}
+            </div>
+            <div class="nav-toggle" id="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Internship Detail -->
+    <div class="internship-detail">
+        <div class="internship-header-detail">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+                <div>
+                    <h1 class="internship-title-detail">{{ internship.title }}</h1>
+                    <p class="company-name-detail">{{ internship.company }}</p>
+                </div>
+                <div style="text-align: right;">
+                    <span class="company-type {{ internship.company_type }}" style="font-size: 1rem; padding: 0.5rem 1rem;">{{ internship.company_type.title() }}</span>
+                </div>
+            </div>
+            
+            <div class="internship-meta-detail">
+                <div class="meta-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>{{ internship.location }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-clock"></i>
+                    <span>{{ internship.duration }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-rupee-sign"></i>
+                    <span>{{ internship.stipend or 'Unpaid' }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>{{ internship.start_date.strftime('%d %b %Y') }} - {{ internship.end_date.strftime('%d %b %Y') }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="internship-description-detail">
+            <div class="description-section">
+                <h3>About the Internship</h3>
+                <p>{{ internship.description }}</p>
+            </div>
+            
+            <div class="description-section">
+                <h3>Requirements</h3>
+                <p>{{ internship.requirements }}</p>
+            </div>
+            
+            {% if internship.skills_required %}
+            <div class="description-section">
+                <h3>Skills Required</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;">
+                    {% for skill in internship.skills_required.split(',') %}
+                    <span style="background: #e0f2fe; color: #0277bd; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.9rem; font-weight: 500;">{{ skill.strip() }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="description-section">
+                <h3>Internship Details</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px;">
+                        <h4 style="color: #495057; margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">Duration</h4>
+                        <p style="font-weight: 600; color: #212529; margin: 0;">{{ internship.duration }}</p>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px;">
+                        <h4 style="color: #495057; margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">Stipend</h4>
+                        <p style="font-weight: 600; color: #212529; margin: 0;">{{ internship.stipend or 'Unpaid' }}</p>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px;">
+                        <h4 style="color: #495057; margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">Location</h4>
+                        <p style="font-weight: 600; color: #212529; margin: 0;">{{ internship.location }}</p>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px;">
+                        <h4 style="color: #495057; margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">Category</h4>
+                        <p style="font-weight: 600; color: #212529; margin: 0;">{{ internship.category }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="description-section">
+                <h3>Company Information</h3>
+                <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 12px; margin-top: 1rem;">
+                    <h4 style="color: #495057; margin-bottom: 0.5rem;">{{ internship.company }}</h4>
+                    <p style="color: #6c757d; margin-bottom: 1rem;">{{ internship.company_type.title() }} Organization</p>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; color: #28a745;">
+                        <i class="fas fa-check-circle"></i>
+                        <span style="font-weight: 500;">Verified Company</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Application Section -->
+        <div class="application-section">
+            {% if session.user_id %}
+                {% if user_applied %}
+                    <div style="text-align: center; padding: 2rem; background: #f0f9ff; border-radius: 12px; border: 2px solid #0ea5e9;">
+                        <i class="fas fa-check-circle" style="font-size: 3rem; color: #0ea5e9; margin-bottom: 1rem;"></i>
+                        <h3 style="color: #0c4a6e; margin-bottom: 0.5rem;">Application Submitted</h3>
+                        <p style="color: #0369a1;">You have already applied for this internship. We'll notify you about the status.</p>
+                    </div>
+                {% else %}
+                    {% if internship.application_deadline >= today %}
+                        <h3 style="margin-bottom: 1rem;">Apply for this Internship</h3>
+                        <form method="POST" action="{{ url_for('apply_internship', internship_id=internship.id) }}" class="application-form">
+                            <div class="form-group">
+                                <label for="cover_letter">Cover Letter (Optional)</label>
+                                <textarea id="cover_letter" name="cover_letter" placeholder="Tell us why you're interested in this internship..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-large" style="width: 100%;">
+                                <i class="fas fa-paper-plane"></i>
+                                Apply Now
+                            </button>
+                        </form>
+                    {% else %}
+                        <div style="text-align: center; padding: 2rem; background: #fef2f2; border-radius: 12px; border: 2px solid #fca5a5;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #dc2626; margin-bottom: 1rem;"></i>
+                            <h3 style="color: #991b1b; margin-bottom: 0.5rem;">Application Closed</h3>
+                            <p style="color: #b91c1c;">The application deadline for this internship has passed.</p>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            {% else %}
+                <div style="text-align: center; padding: 2rem; background: #f0f9ff; border-radius: 12px; border: 2px solid #0ea5e9;">
+                    <i class="fas fa-user-plus" style="font-size: 3rem; color: #0ea5e9; margin-bottom: 1rem;"></i>
+                    <h3 style="color: #0c4a6e; margin-bottom: 0.5rem;">Sign Up to Apply</h3>
+                    <p style="color: #0369a1; margin-bottom: 1.5rem;">Create your profile to apply for this internship and many more opportunities.</p>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <a href="{{ url_for('register') }}" class="btn btn-primary">
+                            <i class="fas fa-user-plus"></i>
+                            Sign Up
+                        </a>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Login
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Important Dates -->
+        <div class="dashboard-card" style="margin-top: 2rem;">
+            <h3 style="margin-bottom: 1.5rem;">Important Dates</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <div style="text-align: center; padding: 1rem; background: #f8fafc; border-radius: 8px;">
+                    <i class="fas fa-calendar-check" style="font-size: 2rem; color: #10b981; margin-bottom: 0.5rem;"></i>
+                    <h4 style="color: #065f46; margin-bottom: 0.25rem;">Start Date</h4>
+                    <p style="color: #047857; font-weight: 500;">{{ internship.start_date.strftime('%d %b %Y') }}</p>
+                </div>
+                <div style="text-align: center; padding: 1rem; background: #f8fafc; border-radius: 8px;">
+                    <i class="fas fa-calendar-times" style="font-size: 2rem; color: #f59e0b; margin-bottom: 0.5rem;"></i>
+                    <h4 style="color: #92400e; margin-bottom: 0.25rem;">End Date</h4>
+                    <p style="color: #b45309; font-weight: 500;">{{ internship.end_date.strftime('%d %b %Y') }}</p>
+                </div>
+                <div style="text-align: center; padding: 1rem; background: #f8fafc; border-radius: 8px;">
+                    <i class="fas fa-clock" style="font-size: 2rem; color: #ef4444; margin-bottom: 0.5rem;"></i>
+                    <h4 style="color: #991b1b; margin-bottom: 0.25rem;">Application Deadline</h4>
+                    <p style="color: #dc2626; font-weight: 500;">{{ internship.application_deadline.strftime('%d %b %Y') }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Information -->
+        <div class="dashboard-card" style="margin-top: 2rem;">
+            <h3 style="margin-bottom: 1.5rem;">Additional Information</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                <div>
+                    <h4 style="color: #495057; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-info-circle" style="color: #007bff;"></i>
+                        Application Process
+                    </h4>
+                    <ul style="color: #6c757d; line-height: 1.6; padding-left: 1.5rem;">
+                        <li>Submit your application through this platform</li>
+                        <li>Include a cover letter highlighting your interest</li>
+                        <li>Wait for company review and response</li>
+                        <li>Interview process (if selected)</li>
+                        <li>Final selection and onboarding</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color: #495057; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-graduation-cap" style="color: #28a745;"></i>
+                        What You'll Learn
+                    </h4>
+                    <ul style="color: #6c757d; line-height: 1.6; padding-left: 1.5rem;">
+                        <li>Real-world industry experience</li>
+                        <li>Professional skill development</li>
+                        <li>Networking opportunities</li>
+                        <li>Mentorship from industry experts</li>
+                        <li>Portfolio building projects</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="dashboard-card" style="margin-top: 2rem;">
+            <h3 style="margin-bottom: 1.5rem;">Contact Information</h3>
+            <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 12px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <i class="fas fa-building" style="color: #007bff; font-size: 1.5rem;"></i>
+                        <div>
+                            <h4 style="margin: 0; color: #495057;">{{ internship.company }}</h4>
+                            <p style="margin: 0; color: #6c757d; font-size: 0.9rem;">{{ internship.company_type.title() }} Organization</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <i class="fas fa-map-marker-alt" style="color: #dc3545; font-size: 1.5rem;"></i>
+                        <div>
+                            <h4 style="margin: 0; color: #495057;">Location</h4>
+                            <p style="margin: 0; color: #6c757d; font-size: 0.9rem;">{{ internship.location }}</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <i class="fas fa-tag" style="color: #28a745; font-size: 1.5rem;"></i>
+                        <div>
+                            <h4 style="margin: 0; color: #495057;">Category</h4>
+                            <p style="margin: 0; color: #6c757d; font-size: 0.9rem;">{{ internship.category }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back to Internships -->
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="{{ url_for('internships') }}" class="btn btn-outline">
+                <i class="fas fa-arrow-left"></i>
+                Back to Internships
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-briefcase"></i>
+                        <span>InternshipHub</span>
+                    </div>
+                    <p>Connecting students with verified internship opportunities from trusted companies and government organizations.</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 InternshipHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
